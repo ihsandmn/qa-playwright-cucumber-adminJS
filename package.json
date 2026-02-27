@@ -1,8 +1,17 @@
 {
-  "devDependencies": {
-    "@cucumber/cucumber": "^12.6.0",
-    "@playwright/test": "^1.58.2",
-    "@types/node": "^25.3.0",
-    "dotenv": "^17.3.1"
-  }
+	"scripts": {
+		"bddgen": "npx bddgen",
+		"test": "npm run bddgen && npx playwright test",
+		"test-env-dev": "npm run bddgen && cross-env ENV=dev npx playwright test",
+		"test-env-staging": "npm run bddgen && cross-env ENV=staging npx playwright test",
+		"test-env-qa": "npm run bddgen && cross-env ENV=qa npx playwright test"
+	},
+	"devDependencies": {
+		"cross-env": "^7.0.3",
+		"@cucumber/cucumber": "^12.6.0",
+		"@playwright/test": "^1.58.2",
+		"playwright-bdd": "^8.4.2",
+		"@types/node": "^25.3.0",
+		"dotenv": "^17.3.1"
+	}
 }

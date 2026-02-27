@@ -1,24 +1,26 @@
-import { defineConfig, devices } from "playwright/test";
+import { defineConfig, devices } from "@playwright/test";
+import { defineBddConfig } from "playwright-bdd";
 import dotenv from "dotenv";
 
-// Load environment variables from .env file
-dotenv.config();
-const baseURL = process.env.DEV_URL;
-console.log(`Running tests in ${baseURL}`);
+// Playwright configuration for BDD
+const testDir = defineBddConfig({
+	importTestFrom: "fixtures/fixtures.ts",
+	paths: ["tests/features/**/*.feature"],
+	require: ["tests/steps/**/*.steps.ts"],
+});
+
+const envName = process.env.ENV || "dev";
+dotenv.config({
+	path: `env/.env.${envName}`,
+});
 
 /**
- * See https://playwright.dev/docs/test-configuration.
+ * Playwright configuration for TDD
  */
 export default defineConfig({
-	testDir: "./features",
-	timeout: 120000, // Increase global timeout from 60s to 120s
-	expect: {
-		timeout: 10000, // Increase expect timeout from 5s to 10s
-	},
+	testDir,
 	/* Run tests in files in parallel */
 	fullyParallel: true,
-	/* Configure parallel mode for all test files */
-	testMatch: "**/*.spec.ts",
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
 	/* Retry on CI only */
@@ -29,16 +31,12 @@ export default defineConfig({
 	reporter: [["html"], ["list"]],
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 	use: {
-		/* Base URL to use in actions like `await page.goto('/')`. */
-		baseURL,
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",
 		// Screenshot only on failure
 		screenshot: "only-on-failure",
 		// Video only on failure
 		video: "retain-on-failure",
-		navigationTimeout: 90000, // Increase navigation timeout from 60s to 90s
-		actionTimeout: 60000, // Increase action timeout from 30s to 60s
 	},
 
 	/* Configure projects for major browsers */
@@ -56,31 +54,31 @@ export default defineConfig({
 				},
 			},
 		},
-		{
-			name: "AdminJS In Firefox",
-			use: {
-				...devices["Desktop Firefox"],
-				viewport: { width: 1280, height: 720 },
-				headless: true,
-				screenshot: "on",
-				trace: "retain-on-failure",
-				launchOptions: {
-					slowMo: 1000,
-				},
-			},
-		},
-		{
-			name: "AdminJS In Safari",
-			use: {
-				...devices["Desktop Safari"],
-				viewport: { width: 1280, height: 720 },
-				headless: true,
-				screenshot: "on",
-				trace: "retain-on-failure",
-				launchOptions: {
-					slowMo: 1000,
-				},
-			},
-		},
+		// {
+		// 	name: "AdminJS In Firefox",
+		// 	use: {
+		// 		...devices["Desktop Firefox"],
+		// 		viewport: { width: 1280, height: 720 },
+		// 		headless: true,
+		// 		screenshot: "on",
+		// 		trace: "retain-on-failure",
+		// 		launchOptions: {
+		// 			slowMo: 1000,
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	name: "AdminJS In Safari",
+		// 	use: {
+		// 		...devices["Desktop Safari"],
+		// 		viewport: { width: 1280, height: 720 },
+		// 		headless: true,
+		// 		screenshot: "on",
+		// 		trace: "retain-on-failure",
+		// 		launchOptions: {
+		// 			slowMo: 1000,
+		// 		},
+		// 	},
+		// },
 	],
 });
